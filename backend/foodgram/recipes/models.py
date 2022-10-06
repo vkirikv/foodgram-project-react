@@ -103,6 +103,6 @@ class Favorite(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],
-                name='unique_follow'
+                name='unique_favorite'
             )
         ]
