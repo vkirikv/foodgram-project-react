@@ -35,11 +35,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users.apps.UsersConfig',
-    'api_users.apps.ApiUsersConfig',
     'recipes.apps.RecipesConfig',
-    'api_recipes.apps.ApiRecipesConfig',
     'shopping_cart.apps.ShoppingCartConfig',
-    'api_shopping.apps.ApiShoppingCartConfig',
 ]
 
 MIDDLEWARE = [
@@ -82,7 +79,7 @@ DATABASES = {
         'USER': os.getenv('POSTGRES_USER', default='postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
         'HOST': os.getenv('DB_HOST', default='db'),
-        'PORT': os.getenv('DB_PORT', default='5432')
+        'PORT': os.getenv('DB_PORT', default='5432'),
     }
 }
 
