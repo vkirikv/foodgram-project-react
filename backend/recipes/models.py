@@ -91,7 +91,8 @@ class Recipe(models.Model):
 
 
     class Meta:
-        verbose_name_plural = 'Рецепт'
+        ordering = ['-pub_date']
+        verbose_name_plural = 'Рецепты'
 
     def __str__(self):
         return self.name
@@ -101,11 +102,13 @@ class Favorite(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
+        related_name='favorites',
         verbose_name='Пользователь'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
+        related_name='favorites',
         verbose_name='Рецепт'
     )
 
@@ -123,11 +126,13 @@ class ShoppingCart(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
+        related_name='shopping_carts',
         verbose_name='Пользователь'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
+        related_name='shopping_carts',
         verbose_name='Рецепт'
     )
 
