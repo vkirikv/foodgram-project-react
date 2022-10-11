@@ -3,7 +3,13 @@ import base64
 from django.core.files.base import ContentFile
 from rest_framework import serializers
 
-from recipes.models import Tag, Ingredient, Recipe, AmountIngredient
+from recipes.models import (
+    Tag,
+    Ingredient,
+    Recipe,
+    AmountIngredient,
+    Subscriptions,
+)
 from users.serializers import CustomUserSerializer
 
 
@@ -105,7 +111,10 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         many=True
     )
     author = CustomUserSerializer(read_only=True)
-    ingredients = AmountIngredientSerializer(many=True)
+    ingredients = AmountIngredientSerializer(
+        source='recipes',  # set needs correct 1
+        many=True,
+    )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
@@ -124,8 +133,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
 
-
-
     def ingredients_create(self, ingredients, recipe):
         ingredients_list = [
             AmountIngredient(
@@ -137,7 +144,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         AmountIngredient.objects.bulk_create(ingredients_list)
 
     def validate(self, data):
-        ingredients = data.get('ingredientsinrecipe_set')
+        ingredients = data.get('recipes')  # set needs correct 2
         if not ingredients:
             raise serializers.ValidationError('Необходимо доавбить '
                                               'ингридиет(ы)!')
@@ -163,7 +170,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        ingredients = validated_data.pop('ingredientsinrecipe_set')
+        ingredients = validated_data.pop('recipes')  # set needs correct 3
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
@@ -176,7 +183,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         AmountIngredient.objects.filter(recipe=instance).delete()
         tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredientsinrecipe_set')
+        ingredients = validated_data.pop('recipes')  # set needs correct 4
         instance.tags.set(tags)
         self.ingredients_create(
             ingredients=ingredients,
@@ -219,3 +226,39 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
             'image',
             'cooking_time',
         )
+
+
+class SubscribeSerializer(CustomUserSerializer):
+    id = serializers.ReadOnlyField(source='author.id')
+    email = serializers.ReadOnlyField(source='author.email')
+    username = serializers.ReadOnlyField(source='author.username')
+    first_name = serializers.ReadOnlyField(source='author.first_name')
+    last_name = serializers.ReadOnlyField(source='author.last_name')
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.ReadOnlyField(source='author.recipes.count')
+
+    class Meta:
+        model = Subscriptions
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count',
+        )
+
+    def get_is_subscribed(self, obj):
+        return Subscriptions.objects.filter(
+            user=obj.user, author=obj.author
+        ).exists()
+
+    def get_recipes(self, obj):
+        request = self.context.get('request')
+        limit = request.GET.get('recipes_limit')
+        queryset = Recipe.objects.filter(author=obj.author)
+        if limit:
+            queryset = queryset[:int(limit)]
+        return FavoriteRecipeSerializer(queryset, many=True).data

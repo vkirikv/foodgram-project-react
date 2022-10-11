@@ -78,7 +78,7 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient,
         through=AmountIngredient,
-        through_fields=('recipe', 'ingredient'),
+        # through_fields=('recipe', 'ingredient'),
         related_name='recipes',
     )
     tags = models.ManyToManyField(
@@ -142,5 +142,29 @@ class ShoppingCart(models.Model):
             models.UniqueConstraint(
                 fields=['user', 'recipe'],
                 name='unique_shopping_cart'
+            )
+        ]
+
+
+class Subscriptions(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='follower',
+        verbose_name='Подписчик'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='following',
+        verbose_name='Автор'
+    )
+
+    class Meta:
+        verbose_name_plural = 'Подписка на пользователя'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='unique_follow'
             )
         ]
