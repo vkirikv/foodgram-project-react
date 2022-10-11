@@ -1,12 +1,30 @@
-from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Sum
+from django.http import HttpResponse
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import (
+    IsAuthenticatedOrReadOnly,
+    IsAuthenticated,
+)
 from rest_framework.response import Response
 
-from recipes.models import Tag, Ingredient, Recipe
-from .serializers import TagSerializer, IngredientSerializer, RecipeSerializer
+from .permissions import IsOwnerOrReadOnly
+from recipes.models import (
+    Tag,
+    Ingredient,
+    Recipe,
+    Favorite,
+    ShoppingCart,
+    AmountIngredient
+)
+from .serializers import (
+    TagSerializer,
+    IngredientSerializer,
+    RecipeSerializer,
+    RecipeCreateSerializer,
+    FavoriteRecipeSerializer,
+)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -33,9 +51,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeCreateSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
-    additional_serializer = FavoriteCartSerializer
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = TagFilter
+    additional_serializer = FavoriteRecipeSerializer
 
     def get_serializer_class(self):
         if self.request.method in ['POST', 'PATCH']:
@@ -44,6 +60,26 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    def add_recipe(self, model, request, pk):
+        recipe = get_object_or_404(Recipe, id=pk)
+        if model.objects.filter(recipe=recipe, user=request.user).exists():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        instance = model.objects.create(user=request.user, recipe=recipe)
+        serializer = FavoriteRecipeSerializer(instance,
+                                            context={'request': request})
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete_recipe(self, model, request, pk):
+        recipe = get_object_or_404(Recipe, id=pk)
+        if model.objects.filter(
+            user=request.user, recipe=recipe
+        ).exists():
+            model.objects.filter(
+                user=request.user, recipe=recipe
+            ).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=['POST', 'DELETE'],
             permission_classes=(IsOwnerOrReadOnly,))
@@ -68,7 +104,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         user = self.request.user
-        ingredients = IngredientsInRecipe.objects.filter(
+        ingredients = AmountIngredient.objects.filter(
             recipe__shopping_cart__user=request.user
         ).values_list(
             'ingredient__name',
@@ -97,23 +133,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
             f'attachment; filename={filename}.txt'
         )
         return response
-
-    def add_recipe(self, model, request, pk):
-        recipe = get_object_or_404(Recipe, id=pk)
-        if model.objects.filter(recipe=recipe, user=request.user).exists():
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        instance = model.objects.create(user=request.user, recipe=recipe)
-        serializer = FavoriteCartSerializer(instance,
-                                            context={'request': request})
-        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-
-    def delete_recipe(self, model, request, pk):
-        recipe = get_object_or_404(Recipe, id=pk)
-        if model.objects.filter(
-            user=request.user, recipe=recipe
-        ).exists():
-            model.objects.filter(
-                user=request.user, recipe=recipe
-            ).delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
