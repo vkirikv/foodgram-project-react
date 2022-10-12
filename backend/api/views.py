@@ -3,12 +3,16 @@ from django.http import HttpResponse
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
+from django.contrib.auth import get_user_model
 from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly,
     IsAuthenticated,
+    AllowAny,
 )
 from rest_framework.response import Response
+from djoser.views import UserViewSet
 
+from users.serializers import CustomUserSerializer
 from .permissions import IsOwnerOrReadOnly
 from recipes.models import (
     Tag,
@@ -16,7 +20,7 @@ from recipes.models import (
     Recipe,
     Favorite,
     ShoppingCart,
-    AmountIngredient
+    AmountIngredient, Subscriptions
 )
 from .serializers import (
     TagSerializer,
@@ -24,7 +28,63 @@ from .serializers import (
     RecipeSerializer,
     RecipeCreateSerializer,
     FavoriteRecipeSerializer,
+    SubscribeSerializer,
 )
+
+User = get_user_model()
+
+
+class SubscriptionsViewSet(UserViewSet):
+    queryset = User.objects.all()
+    serializer_class = CustomUserSerializer
+    permission_classes = (AllowAny,)
+    additional_serializer = SubscribeSerializer
+
+    @action(detail=False,
+            permission_classes=(IsAuthenticated,))
+    def subscriptions(self, request):
+        user = request.user
+        authors = Subscriptions.objects.filter(user=user)
+        pages = self.paginate_queryset(authors)
+        serializer = self.additional_serializer(
+            pages,
+            many=True,
+            context={'request': request})
+        return self.get_paginated_response(serializer.data)
+
+    @action(methods=['POST', 'DELETE'], detail=True)
+    def subscribe(self, request, **kwargs):
+        user = request.user
+        author = get_object_or_404(User, id=kwargs.get('id'))
+        if request.method == 'POST':
+            if user == author:
+                return Response({
+                    'errors': 'Вы не можете подписываться на самого себя'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            if Subscriptions.objects.filter(user=user, author=author).exists():
+                return Response(
+                    {'errors': 'Вы уже подписаны на данного пользователя'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            subscribe = Subscriptions.objects.create(user=user, author=author)
+            serializer = self.additional_serializer(
+                subscribe, context={'request': request}
+            )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if request.method == 'DELETE':
+            if user == author:
+                return Response(
+                    {'errors': 'Имена пользователя и автора совпадают'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            follow = Subscriptions.objects.filter(user=user, author=author)
+            if follow.exists():
+                follow.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(
+                {'errors': 'У вас нет подписки на такого автора'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -67,7 +127,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         instance = model.objects.create(user=request.user, recipe=recipe)
         serializer = FavoriteRecipeSerializer(instance,
-                                            context={'request': request})
+                                              context={'request': request})
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_recipe(self, model, request, pk):
@@ -114,7 +174,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ).annotate(
             ingredient_sum=Sum('amount')
         )
-        filename = f'{user.username}_shopping_list.txt'
+        filename = f'{user.username}_shopping_list'
         temp_shopping_cart = {}
         for ingredient in ingredients:
             name = ingredient[0]

@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 
 from recipes.models import Subscriptions
 
+
 User = get_user_model()
 
 
