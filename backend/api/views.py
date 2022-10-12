@@ -12,17 +12,18 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 from djoser.views import UserViewSet
 
-from users.serializers import CustomUserSerializer
 from .permissions import IsOwnerOrReadOnly
+from users.models import Subscriptions
 from recipes.models import (
     Tag,
     Ingredient,
     Recipe,
     Favorite,
     ShoppingCart,
-    AmountIngredient, Subscriptions
+    AmountIngredient,
 )
 from .serializers import (
+    CustomUserSerializer,
     TagSerializer,
     IngredientSerializer,
     RecipeSerializer,
