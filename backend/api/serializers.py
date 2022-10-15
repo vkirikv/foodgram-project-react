@@ -69,7 +69,6 @@ class CustomUserCreateSerializer(UserCreateSerializer):
         }
 
 
-
 class TagSerializer(serializers.ModelSerializer):
     """
     Получение информации о тэгах.
@@ -185,24 +184,22 @@ class RecipeSerializer(serializers.ModelSerializer):
         Получение информации: добавлен ли рецепт в избранное.
         """
         user = self.context.get('request').user
-        return (user.is_authenticated and
-                Recipe.objects.filter(
+        return (user.is_authenticated
+                and Recipe.objects.filter(
                     favorites__user=user,
                     id=obj.id
-                ).exists()
-                )
+                    ).exists())
 
     def get_is_in_shopping_cart(self, obj):
         """
         Получение информации: добавлен ли рецепт в список покупок.
         """
         user = self.context.get('request').user
-        return (user.is_authenticated and
-                Recipe.objects.filter(
+        return (user.is_authenticated
+                and Recipe.objects.filter(
                     shopping_cart__user=user,
-                    id=obj.id
-                ).exists()
-                )
+                    id=obj.id,
+                    ).exists())
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
@@ -327,24 +324,22 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         Получение информации: добавлен ли рецепт в избранное.
         """
         user = self.context.get('request').user
-        return (user.is_authenticated and
-                Recipe.objects.filter(
+        return (user.is_authenticated
+                and Recipe.objects.filter(
                     favorites__user=user,
-                    id=obj.id
-                ).exists()
-                )
+                    id=obj.id,
+                    ).exists())
 
     def get_is_in_shopping_cart(self, obj):
         """
         Получение информации: добавлен ли рецепт в список покупок.
         """
         user = self.context.get('request').user
-        return (user.is_authenticated and
-                Recipe.objects.filter(
+        return (user.is_authenticated
+                and Recipe.objects.filter(
                     shopping_cart__user=user,
-                    id=obj.id
-                ).exists()
-                )
+                    id=obj.id,
+                    ).exists())
 
 
 class FavoriteRecipeSerializer(serializers.ModelSerializer):

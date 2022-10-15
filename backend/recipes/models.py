@@ -75,7 +75,6 @@ class AmountIngredient(models.Model):
         ]
 
 
-
 class Recipe(models.Model):
     author = models.ForeignKey(
         User,
@@ -117,7 +116,6 @@ class Recipe(models.Model):
             MaxValueValidator(500, message='Максимальное значение 500!'),
         ],
     )
-
 
     class Meta:
         ordering = ('-pub_date',)
