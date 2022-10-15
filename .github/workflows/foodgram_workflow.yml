@@ -99,14 +99,18 @@ jobs:
             sudo echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
             sudo echo DEBUG=${{ secrets.DEBUG }} >> .env
 
-            sudo docker compose stop
+            sudo docker-compose stop
 
-            sudo docker compose rm backend
-            sudo docker compose pull backend
-            sudo docker compose rm frontend
-            sudo docker compose pull frontend
+            sudo docker-compose rm backend
+            sudo docker-compose pull backend
+            sudo docker-compose rm frontend
+            sudo docker-compose pull frontend
 
-            sudo docker compose up -d --build
+            sudo docker-compose up -d
+            sudo docker-compose exec backend python manage.py makemigrations
+            sudo docker-compose exec backend python manage.py migrate
+            sudo docker-compose exec backend python manage.py collectstatic --noinput
+
   send_message:
     name: Sending Telegram message
     runs-on: ubuntu-latest
