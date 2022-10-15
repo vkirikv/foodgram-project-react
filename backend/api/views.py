@@ -36,6 +36,9 @@ User = get_user_model()
 
 
 class SubscriptionsViewSet(UserViewSet):
+    """
+    Подписка на автора.
+    """
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = (AllowAny,)
@@ -44,6 +47,9 @@ class SubscriptionsViewSet(UserViewSet):
     @action(detail=False,
             permission_classes=(IsAuthenticated,))
     def subscriptions(self, request):
+        """
+        Получение информации об авторе.
+        """
         user = request.user
         authors = Subscriptions.objects.filter(user=user)
         pages = self.paginate_queryset(authors)
@@ -55,6 +61,9 @@ class SubscriptionsViewSet(UserViewSet):
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def subscribe(self, request, **kwargs):
+        """
+        Подписка на автора.
+        """
         user = request.user
         author = get_object_or_404(User, id=kwargs.get('id'))
         if request.method == 'POST':
@@ -115,14 +124,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
     additional_serializer = FavoriteRecipeSerializer
 
     def get_serializer_class(self):
+        """
+        Выбор сериализатора в зависимости от типа запроса.
+        """
         if self.request.method in ['POST', 'PATCH']:
             return RecipeCreateSerializer
         return RecipeSerializer
 
     def perform_create(self, serializer):
+        """
+        Назначение пользователя, который делает запрос, автором рецепта.
+        """
         serializer.save(author=self.request.user)
 
     def add_recipe(self, model, request, pk):
+        """
+        Добавление рецепта к списку избранных рецептов или списку покупок.
+        """
         recipe = get_object_or_404(Recipe, id=pk)
         if model.objects.filter(recipe=recipe, user=request.user).exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -132,6 +150,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_recipe(self, model, request, pk):
+        """
+        Удаление рецепта из списка избранных рецептов или списка покупок.
+        """
         recipe = get_object_or_404(Recipe, id=pk)
         if model.objects.filter(
             user=request.user, recipe=recipe
@@ -145,6 +166,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['POST', 'DELETE'],
             permission_classes=(IsOwnerOrReadOnly,))
     def favorite(self, request, **kwargs):
+        """
+        Обработка запросов, связанная с добавлением или удалением рецептов
+        из избранного списка рецептов.
+        """
         if request.method == 'POST':
             return self.add_recipe(Favorite, request, kwargs.get('pk'))
         if request.method == 'DELETE':
@@ -153,6 +178,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['GET', 'POST', 'DELETE'],
             permission_classes=(IsAuthenticated,))
     def shopping_cart(self, request, **kwargs):
+        """
+        Обработка запросов, связанная с добавлением или удалением рецептов
+        из списка покупок.
+        """
         if request.method == 'POST':
             return self.add_recipe(ShoppingCart, request, kwargs.get('pk'))
         if request.method == 'DELETE':
@@ -164,6 +193,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request):
+        """
+        Вывод списка ингредиетов и их количества в формат txt из
+        списка покупок.
+        """
         user = self.request.user
         ingredients = AmountIngredient.objects.filter(
             recipe__shopping_cart__user=request.user
