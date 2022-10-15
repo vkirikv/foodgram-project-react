@@ -188,7 +188,8 @@ class RecipeSerializer(serializers.ModelSerializer):
                 and Recipe.objects.filter(
                     favorites__user=user,
                     id=obj.id
-                    ).exists())
+                    ).exists()
+                )
 
     def get_is_in_shopping_cart(self, obj):
         """
@@ -199,7 +200,8 @@ class RecipeSerializer(serializers.ModelSerializer):
                 and Recipe.objects.filter(
                     shopping_cart__user=user,
                     id=obj.id,
-                    ).exists())
+                    ).exists()
+                )
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
@@ -328,7 +330,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 and Recipe.objects.filter(
                     favorites__user=user,
                     id=obj.id,
-                    ).exists())
+                    ).exists()
+                )
 
     def get_is_in_shopping_cart(self, obj):
         """
@@ -339,7 +342,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 and Recipe.objects.filter(
                     shopping_cart__user=user,
                     id=obj.id,
-                    ).exists())
+                    ).exists()
+                )
 
 
 class FavoriteRecipeSerializer(serializers.ModelSerializer):
