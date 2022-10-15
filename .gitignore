@@ -133,3 +133,4 @@ dmypy.json
 /backend/my_test_req.http
 /backend/users/my_users.http
 /backend/api/my_api.http
+/backend/media/
