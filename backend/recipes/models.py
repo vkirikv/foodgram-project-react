@@ -9,7 +9,7 @@ from users.models import User
 
 
 class Tag(models.Model):
-    name = models.CharField(unique=True, max_length=200,
+    name = models.CharField(unique=True, max_length=50,
                             verbose_name='Название')
     color = models.CharField(
         unique=True,
