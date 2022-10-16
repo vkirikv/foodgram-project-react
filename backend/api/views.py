@@ -12,6 +12,7 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 from djoser.views import UserViewSet
 
+from pagination import CustomPagination
 from .permissions import IsOwnerOrReadOnly
 from users.models import Subscriptions
 from recipes.models import (
@@ -43,6 +44,7 @@ class SubscriptionsViewSet(UserViewSet):
     serializer_class = CustomUserSerializer
     permission_classes = (AllowAny,)
     additional_serializer = SubscribeSerializer
+    pagination_class = CustomPagination
 
     @action(detail=False,
             permission_classes=(IsAuthenticated,))
@@ -103,7 +105,6 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    paginator = None
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -112,7 +113,6 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    paginator = None
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -124,6 +124,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeCreateSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
     additional_serializer = FavoriteRecipeSerializer
+    pagination_class = CustomPagination
 
     def get_serializer_class(self):
         """
