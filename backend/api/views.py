@@ -103,7 +103,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    pagination_class = None
+    paginator = None
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -112,7 +112,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    pagination_class = None
+    paginator = None
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
