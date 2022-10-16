@@ -12,7 +12,7 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 from djoser.views import UserViewSet
 
-from pagination import CustomPagination
+from .pagination import CustomPagination
 from .permissions import IsOwnerOrReadOnly
 from users.models import Subscriptions
 from recipes.models import (
