@@ -13,7 +13,6 @@ from rest_framework.response import Response
 from djoser.views import UserViewSet
 
 from .filters import IngredientFilter, RecipeFilter
-from .pagination import CustomPagination
 from .permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
 from users.models import Subscriptions
 from recipes.models import (
@@ -44,12 +43,10 @@ class SubscriptionsViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
     additional_serializer = SubscribeSerializer
-    pagination_class = CustomPagination
 
     @action(
-        # methods=['GET'],
         detail=False,
-        # permission_classes=(IsAuthenticated,)
+        permission_classes=(IsAuthenticated,)
     )
     def subscriptions(self, request):
         """
@@ -113,6 +110,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = None
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -124,6 +122,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = IngredientFilter
+    pagination_class = None
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -135,7 +134,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeCreateSerializer
     permission_classes = (IsOwnerOrReadOnly,)
     additional_serializer = FavoriteRecipeSerializer
-    pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
 
