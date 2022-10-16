@@ -46,8 +46,11 @@ class SubscriptionsViewSet(UserViewSet):
     additional_serializer = SubscribeSerializer
     pagination_class = CustomPagination
 
-    @action(detail=False,
-            permission_classes=(IsAuthenticated,))
+    @action(
+        # methods=['GET'],
+        detail=False,
+        # permission_classes=(IsAuthenticated,)
+    )
     def subscriptions(self, request):
         """
         Получение информации об авторе.
