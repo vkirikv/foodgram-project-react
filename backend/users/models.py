@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth import get_user_model
 
@@ -17,6 +18,10 @@ class Subscriptions(models.Model):
         related_name='following',
         verbose_name='Автор'
     )
+
+    def clean(self):
+        if self.user == self.author:
+            raise ValidationError('Нельзя подписаться на самого себя!')
 
     class Meta:
         verbose_name = 'Подписка'
