@@ -1,6 +1,7 @@
 import base64
 
 from django.core.files.base import ContentFile
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 from djoser.serializers import UserCreateSerializer, UserSerializer
@@ -261,22 +262,25 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                                               'ингридиет(ы)!')
         validated_ingredients = []
         for ingredient in ingredients:
+            amount = ingredient['amount']
+            print(f'amount - {amount}')
+            print(isinstance(amount, (float, int)))
             id_to_check = ingredient['id']
             ingredient_to_check = Ingredient.objects.filter(id=id_to_check)
             if not ingredient_to_check.exists():
                 raise serializers.ValidationError(
                     'Ингридиента нет в базе!')
-            amount = ingredient['amount']
             if not isinstance(amount, (float, int)):
                 raise serializers.ValidationError('Количество небходимо'
                                                   ' указать цифрами!')
             if amount <= 0:
                 raise serializers.ValidationError('Количество ингредиента'
                                                   ' должно быть больше 0')
-            if ingredient in validated_ingredients:
+            ingredient_to_check = get_object_or_404(Ingredient, id=ingredient['id'])
+            if ingredient_to_check in validated_ingredients:
                 raise serializers.ValidationError('Ингредиенты не должны'
-                                                  ' повторяться.')
-            validated_ingredients.append(ingredient)
+                                                  ' повторяться!')
+            validated_ingredients.append(ingredient_to_check)
         return value
 
     def validate_tags(self, value):
