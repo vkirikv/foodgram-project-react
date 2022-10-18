@@ -7,7 +7,7 @@ from rest_framework.generics import get_object_or_404
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import (
     IsAuthenticated,
-    AllowAny,
+    AllowAny, SAFE_METHODS,
 )
 from rest_framework.response import Response
 from djoser.views import UserViewSet
@@ -141,9 +141,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """
         Выбор сериализатора в зависимости от типа запроса.
         """
-        if self.request.method in ['POST', 'PATCH']:
-            return RecipeCreateSerializer
-        return RecipeSerializer
+        if self.request.method in SAFE_METHODS:
+            return RecipeSerializer
+        return RecipeCreateSerializer
+
 
     def perform_create(self, serializer):
         """
