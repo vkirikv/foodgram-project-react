@@ -276,7 +276,10 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             if amount <= 0:
                 raise serializers.ValidationError('Количество ингредиента'
                                                   ' должно быть больше 0')
-            ingredient_to_check = get_object_or_404(Ingredient, id=ingredient['id'])
+            ingredient_to_check = get_object_or_404(
+                Ingredient,
+                id=ingredient['id']
+            )
             if ingredient_to_check in validated_ingredients:
                 raise serializers.ValidationError('Ингредиенты не должны'
                                                   ' повторяться!')
