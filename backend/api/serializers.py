@@ -263,8 +263,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         validated_ingredients = []
         for ingredient in ingredients:
             amount = ingredient['amount']
-            print(f'amount - {amount}')
-            print(isinstance(amount, (float, int)))
             id_to_check = ingredient['id']
             ingredient_to_check = Ingredient.objects.filter(id=id_to_check)
             if not ingredient_to_check.exists():
