@@ -143,7 +143,7 @@ class AmountIngredientRecipeSerializer(serializers.ModelSerializer):
     Создание сериализатора для записи количества ингредиента в рецепте
     при его создании.
     """
-    id = serializers.IntegerField()
+    id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = AmountIngredient
