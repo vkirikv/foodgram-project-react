@@ -145,7 +145,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeSerializer
         return RecipeCreateSerializer
 
-
     def perform_create(self, serializer):
         """
         Назначение пользователя, который делает запрос, автором рецепта.
