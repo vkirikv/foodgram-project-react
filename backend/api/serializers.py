@@ -327,6 +327,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         # )
         # return super().update(instance=instance,
         # validated_data=validated_data)
+        # need to change
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('recipes')
         instance = super().update(instance, validated_data)
