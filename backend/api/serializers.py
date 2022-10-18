@@ -317,15 +317,28 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """
         Обновление полей модели рецепта.
         """
-        AmountIngredient.objects.filter(recipe=instance).delete()
+        # AmountIngredient.objects.filter(recipe=instance).delete()
+        # tags = validated_data.pop('tags')
+        # ingredients = validated_data.pop('recipes')
+        # instance.tags.set(tags)
+        # self.ingredients_create(
+        #     ingredients=ingredients,
+        #     recipe=instance
+        # )
+        # return super().update(instance=instance,
+        # validated_data=validated_data)
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('recipes')
+        instance = super().update(instance, validated_data)
+        instance.tags.clear()
         instance.tags.set(tags)
+        instance.ingredients.clear()
         self.ingredients_create(
-            ingredients=ingredients,
-            recipe=instance
+            recipe=instance,
+            ingredients=ingredients
         )
-        return super().update(instance=instance, validated_data=validated_data)
+        instance.save()
+        return instance
 
     def get_is_favorited(self, obj):
         """
