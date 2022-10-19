@@ -143,7 +143,7 @@ class AmountIngredientRecipeSerializer(serializers.ModelSerializer):
     Создание сериализатора для записи количества ингредиента в рецепте
     при его создании.
     """
-    id = serializers.IntegerField()
+    id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = AmountIngredient
@@ -159,7 +159,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(read_only=True)
     ingredients = AmountIngredientSerializer(
         many=True,
-        source='recipes',
+        source='amountingredient_set',
         read_only=True,
     )
     is_favorited = serializers.SerializerMethodField()
@@ -218,11 +218,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     )
     author = CustomUserSerializer(read_only=True)
     ingredients = AmountIngredientRecipeSerializer(
-        source='amountingredient_set',
         many=True,
     )
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
@@ -231,8 +228,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             'tags',
             'author',
             'ingredients',
-            'is_favorited',
-            'is_in_shopping_cart',
             'name',
             'image',
             'text',
@@ -303,7 +298,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """
         Добавление данных в поля  модели рецепта.
         """
-        ingredients = validated_data.pop('amountingredient_set')
+        ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
@@ -319,7 +314,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """
         AmountIngredient.objects.filter(recipe=instance).delete()
         tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('amountingredient_set')
+        ingredients = validated_data.pop('ingredients')
         instance.tags.set(tags)
         self.ingredients_create(
             ingredients=ingredients,
@@ -327,29 +322,10 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         )
         return super().update(instance=instance, validated_data=validated_data)
 
-    def get_is_favorited(self, obj):
-        """
-        Получение информации: добавлен ли рецепт в избранное.
-        """
-        user = self.context.get('request').user
-        return (user.is_authenticated
-                and Recipe.objects.filter(
-                    favorites__user=user,
-                    id=obj.id,
-                    ).exists()
-                )
-
-    def get_is_in_shopping_cart(self, obj):
-        """
-        Получение информации: добавлен ли рецепт в список покупок.
-        """
-        user = self.context.get('request').user
-        return (user.is_authenticated
-                and Recipe.objects.filter(
-                    shopping_cart__user=user,
-                    id=obj.id,
-                    ).exists()
-                )
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        context = {'request': request}
+        return RecipeSerializer(instance, context=context).data
 
 
 class FavoriteRecipeSerializer(serializers.ModelSerializer):
