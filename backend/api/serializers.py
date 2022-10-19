@@ -138,7 +138,6 @@ class AmountIngredientSerializer(serializers.ModelSerializer):
         )
 
 
-
 class AmountIngredientRecipeSerializer(serializers.ModelSerializer):
     """
     Создание сериализатора для записи количества ингредиента в рецепте
