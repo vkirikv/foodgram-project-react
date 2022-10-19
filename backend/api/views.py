@@ -131,6 +131,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     Добавление рецептов в избранное и в список покупок.
     """
     queryset = Recipe.objects.all()
+    serializer_class = RecipeCreateSerializer
     permission_classes = (IsOwnerOrReadOnly,)
     additional_serializer = FavoriteRecipeSerializer
     filter_backends = (DjangoFilterBackend,)
