@@ -250,7 +250,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """
         ingredients_list = [
             AmountIngredient(
-                # ingredient=ingredient['id'],
                 ingredient=Ingredient.objects.get(id=ingredient['id']),
                 recipe=recipe,
                 amount=ingredient['amount'],
@@ -332,19 +331,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             recipe=instance
         )
         return super().update(instance=instance, validated_data=validated_data)
-        # need to change
-        # tags = validated_data.pop('tags')
-        # ingredients = validated_data.pop('recipes')
-        # instance = super().update(instance, validated_data)
-        # instance.tags.clear()
-        # instance.tags.set(tags)
-        # instance.ingredients.clear()
-        # self.ingredients_create(
-        #     recipe=instance,
-        #     ingredients=ingredients
-        # )
-        # instance.save()
-        # return instance
 
     def get_is_favorited(self, obj):
         """
