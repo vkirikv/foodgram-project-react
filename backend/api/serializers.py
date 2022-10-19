@@ -218,7 +218,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     )
     author = CustomUserSerializer(read_only=True)
     ingredients = AmountIngredientRecipeSerializer(
-        source='recipes',
+        source='amountingredient_set',
         many=True,
     )
     is_favorited = serializers.SerializerMethodField()
@@ -303,7 +303,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """
         Добавление данных в поля  модели рецепта.
         """
-        ingredients = validated_data.pop('recipes')
+        ingredients = validated_data.pop('amountingredient_set')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
@@ -317,12 +317,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """
         Обновление полей модели рецепта.
         """
-        print(f'instance - {instance}  validated_data - {validated_data}')
         AmountIngredient.objects.filter(recipe=instance).delete()
         tags = validated_data.pop('tags')
-        print(f'tags - {tags}')
-        ingredients = validated_data.pop('recipes')
-        print(f'ingredients - {ingredients}')
+        ingredients = validated_data.pop('amountingredient_set')
         instance.tags.set(tags)
         self.ingredients_create(
             ingredients=ingredients,
