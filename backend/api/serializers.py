@@ -137,10 +137,6 @@ class AmountIngredientSerializer(serializers.ModelSerializer):
             'measurement_unit',
         )
 
-    def to_representation(self, instance):
-        data = IngredientSerializer(instance.ingredient).data
-        data['amount'] = instance.amount
-        return data
 
 
 class AmountIngredientRecipeSerializer(serializers.ModelSerializer):
@@ -322,9 +318,12 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """
         Обновление полей модели рецепта.
         """
+        print(f'instance - {instance}  validated_data - {validated_data}')
         AmountIngredient.objects.filter(recipe=instance).delete()
         tags = validated_data.pop('tags')
+        print(f'tags - {tags}')
         ingredients = validated_data.pop('recipes')
+        print(f'ingredients - {ingredients}')
         instance.tags.set(tags)
         self.ingredients_create(
             ingredients=ingredients,
