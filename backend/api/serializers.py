@@ -137,13 +137,18 @@ class AmountIngredientSerializer(serializers.ModelSerializer):
             'measurement_unit',
         )
 
+    def to_representation(self, instance):
+        data = IngredientSerializer(instance.ingredient).data
+        data['amount'] = instance.amount
+        return data
+
 
 class AmountIngredientRecipeSerializer(serializers.ModelSerializer):
     """
     Создание сериализатора для записи количества ингредиента в рецепте
     при его создании.
     """
-    id = serializers.IntegerField(write_only=True)
+    id = serializers.IntegerField()
 
     class Meta:
         model = AmountIngredient
@@ -245,6 +250,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """
         ingredients_list = [
             AmountIngredient(
+                # ingredient=ingredient['id'],
                 ingredient=Ingredient.objects.get(id=ingredient['id']),
                 recipe=recipe,
                 amount=ingredient['amount'],
@@ -317,29 +323,28 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """
         Обновление полей модели рецепта.
         """
-        # AmountIngredient.objects.filter(recipe=instance).delete()
-        # tags = validated_data.pop('tags')
-        # ingredients = validated_data.pop('recipes')
-        # instance.tags.set(tags)
-        # self.ingredients_create(
-        #     ingredients=ingredients,
-        #     recipe=instance
-        # )
-        # return super().update(instance=instance,
-        # validated_data=validated_data)
-        # need to change
+        AmountIngredient.objects.filter(recipe=instance).delete()
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('recipes')
-        instance = super().update(instance, validated_data)
-        instance.tags.clear()
         instance.tags.set(tags)
-        instance.ingredients.clear()
         self.ingredients_create(
-            recipe=instance,
-            ingredients=ingredients
+            ingredients=ingredients,
+            recipe=instance
         )
-        instance.save()
-        return instance
+        return super().update(instance=instance, validated_data=validated_data)
+        # need to change
+        # tags = validated_data.pop('tags')
+        # ingredients = validated_data.pop('recipes')
+        # instance = super().update(instance, validated_data)
+        # instance.tags.clear()
+        # instance.tags.set(tags)
+        # instance.ingredients.clear()
+        # self.ingredients_create(
+        #     recipe=instance,
+        #     ingredients=ingredients
+        # )
+        # instance.save()
+        # return instance
 
     def get_is_favorited(self, obj):
         """
