@@ -1,6 +1,6 @@
 ![workflow](https://github.com/Anton-Kim/foodgram-project-react/actions/workflows/main.yml/badge.svg)
 
-![](https://img.shields.io/badge/Python-3.7.0-blue?style=flat&logo=python&logoColor=white)
+![](https://img.shields.io/badge/Python-3.8.0-blue?style=flat&logo=python&logoColor=white)
 ![](https://img.shields.io/badge/Django-3.2.15-orange?style=flat&logo=django&logoColor=white)
 ![](https://img.shields.io/badge/PostgreSQL-13.0-blue?style=flat&logo=postgresql&logoColor=white)
 
@@ -8,9 +8,9 @@
 
 **Foodgram** - приложение в котором пользователи могут публиковать рецепты, добавлять чужие рецепты в избранное и подписываться на публикации других авторов. Сервис «Foodgram» позволяет пользователям создавать список продуктов, которые нужно купить для приготовления выбранных блюд.
 
-Проект доступен по адресу [antonkim.design](http://178.154.222.19)<br>
-Документация к API доступна [antonkim.design/api/docs](http://178.154.222.19/api/docs/)<br>
-Админ-зона [antonkim.design/admin](http://178.154.222.19/admin/)<br>
+Проект доступен по адресу [178.154.222.19](http://178.154.222.19)<br>
+Документация к API доступна [178.154.222.19/api/docs](http://178.154.222.19/api/docs/)<br>
+Админ-зона [178.154.222.19/admin](http://178.154.222.19/admin/)<br>
 
 ## ⚙ Используемые технологии:
 
