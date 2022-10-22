@@ -1,0 +1,127 @@
+POST http://127.0.0.1:8000/api/recipes/
+Authorization: Token ae7ff49ed5d396679cdbd35c9c99491b83150f20
+Content-Type: application/json
+
+{
+  "ingredients": [
+    {
+      "id": 1226,
+      "amount": 99
+    }
+  ],
+  "tags": [
+    2,
+    3
+  ],
+  "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAgMAAABieywaAAAACVBMVEUAAAD///9fX1/S0ecCAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAACklEQVQImWNoAAAAggCByxOyYQAAAABJRU5ErkJggg==",
+  "name": "Тестовое блюдо_6",
+  "text": "Приготовление для тестов_6",
+  "cooking_time": 20
+}
+
+###
+
+PATCH http://127.0.0.1:8000/api/recipes/206/
+Authorization: Token ae7ff49ed5d396679cdbd35c9c99491b83150f20
+Content-Type: application/json
+
+{
+  "ingredients": [
+    {
+      "id": 1226,
+      "amount": 5
+    },
+    {
+      "id": 1227,
+      "amount": 5
+    }
+  ],
+  "tags": [
+    2,
+    3
+  ],
+  "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAgMAAABieywaAAAACVBMVEUAAAD///9fX1/S0ecCAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAACklEQVQImWNoAAAAggCByxOyYQAAAABJRU5ErkJggg==",
+  "name": "Тестовое блюдо_6",
+  "text": "Приготовление для тестов_6",
+  "cooking_time": 20
+}
+###
+
+POST http://127.0.0.1:8000/api/recipes/82/favorite/
+Authorization: Token ae7ff49ed5d396679cdbd35c9c99491b83150f20
+Content-Type: application/json
+
+###
+
+GET http://127.0.0.1:8000/api/recipes/86/
+Authorization: Token ae7ff49ed5d396679cdbd35c9c99491b83150f20
+Content-Type: application/json
+
+###
+
+POST http://127.0.0.1:8000/api/users/3/subscribe/
+Authorization: Token ae7ff49ed5d396679cdbd35c9c99491b83150f20
+Content-Type: application/json
+
+###
+
+GET http://127.0.0.1:8000/api/users/subscriptions/
+Authorization: Token 11a4612a5c12c606105570d836e22f59180e8370
+Content-Type: application/json
+
+###
+
+GET http://178.154.222.19/api/tags/3/
+Authorization: Token c842ae354d127b3edf3453a6f09954f2e96ece90
+Content-Type: application/json
+
+###
+
+POST http://178.154.222.19/api/recipes/
+Authorization: Token 9f71d71fc8c5da2d7e8ff0b221f91c0597020360
+Content-Type: application/json
+
+{
+  "ingredients": [
+    {
+      "id": 1,
+      "amount": 99
+    }
+  ],
+  "tags": [
+    2,
+    3
+  ],
+  "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAgMAAABieywaAAAACVBMVEUAAAD///9fX1/S0ecCAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAACklEQVQImWNoAAAAggCByxOyYQAAAABJRU5ErkJggg==",
+  "name": "Тестовое блюдо_6",
+  "text": "Приготовление для тестов_6",
+  "cooking_time": 20
+}
+
+###
+
+PATCH http://178.154.222.19/api/recipes/60/
+Authorization: Token 9f71d71fc8c5da2d7e8ff0b221f91c0597020360
+Content-Type: application/json
+
+{
+  "ingredients": [
+    {
+      "id": 1,
+      "amount": 5
+    },
+    {
+      "id": 2,
+      "amount": 5
+    }
+  ],
+  "tags": [
+    2,
+    3
+  ],
+  "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAgMAAABieywaAAAACVBMVEUAAAD///9fX1/S0ecCAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAACklEQVQImWNoAAAAggCByxOyYQAAAABJRU5ErkJggg==",
+  "name": "Тестовое блюдо_6",
+  "text": "Приготовление для тестов_6",
+  "cooking_time": 20
+}
+###

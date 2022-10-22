@@ -1,0 +1,51 @@
+POST http://127.0.0.1:8000/api/users/
+Content-Type: application/json
+
+{
+  "email": "3_vpupkin@yandex.ru",
+  "username": "3_vasya.pupkin",
+  "first_name": "Вася_3",
+  "last_name": "Пупкин_3",
+  "password": "Qwerty123_3"
+}
+
+###
+
+POST http://127.0.0.1:8000/api/auth/token/login/
+Content-Type: application/json
+
+{
+  "email": "3_vpupkin@yandex.ru",
+  "password": "Qwerty123_3"
+}
+
+###
+
+"Вася_2": ae7ff49ed5d396679cdbd35c9c99491b83150f20
+"Вася_3": 11a4612a5c12c606105570d836e22f59180e8370
+
+###
+
+POST http://178.154.222.19/api/users/4/subscribe/
+Authorization: Token c842ae354d127b3edf3453a6f09954f2e96ece90
+Content-Type: application/json
+
+###
+
+GET http://178.154.222.19/api/users/subscriptions/
+Authorization: Token c842ae354d127b3edf3453a6f09954f2e96ece90
+Content-Type: application/json
+
+###
+
+POST http://127.0.0.1:8000/api/users/3/subscribe/
+Authorization: Token ae7ff49ed5d396679cdbd35c9c99491b83150f20
+Content-Type: application/json
+
+###
+
+GET http://127.0.0.1:8000/api/users/subscriptions/
+Authorization: Token ae7ff49ed5d396679cdbd35c9c99491b83150f20
+Content-Type: application/json
+
+###
